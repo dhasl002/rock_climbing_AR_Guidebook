@@ -34,6 +34,14 @@ class ViewController: UIViewController, ARSessionDelegate {
     override func viewDidLoad() {
         self.record = false
         self.playback = false
+        recordButton.isEnabled = false
+        playbackButton.isEnabled = false
+        recordButton.isHidden = true
+        playbackButton.isHidden = true
+    }
+    
+    func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
+        return true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -45,10 +53,8 @@ class ViewController: UIViewController, ARSessionDelegate {
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
-
-        // Run a body tracking configration.
-        let configuration = ARBodyTrackingConfiguration()
-        arView.session.run(configuration)
+        arView.session.configuration
+        loadExperience()
         
         arView.scene.addAnchor(characterAnchor)
         
@@ -74,7 +80,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func playbackRecording() {
         if bodyPositionIterator >= bodyPositions.count-1 {
-            playback = false
+            bodyPositionIterator = 0
             return
         }
         character?.jointTransforms = limbPositions[bodyPositionIterator]
@@ -90,6 +96,18 @@ class ViewController: UIViewController, ARSessionDelegate {
             playbackRecording()
         }
     }
+    
+    func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
+        switch cameraDidChangeTrackingState.trackingState {
+        case .normal:
+            print("normal!")
+            recordButton.isEnabled = true
+            recordButton.isHidden = false
+        case .notAvailable, .limited:
+            print("tracking limited")
+        }
+    }
+
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         if !playback {
@@ -116,6 +134,44 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
     }
     
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        print("did add!!!")
+    }
+
+    lazy var mapSaveURL: URL = {
+        do {
+            return try FileManager.default
+                .url(for: .documentDirectory,
+                     in: .userDomainMask,
+                     appropriateFor: nil,
+                     create: true)
+                .appendingPathComponent("map.arexperience")
+        } catch {
+            fatalError("Can't get file save URL: \(error.localizedDescription)")
+        }
+    }()
+    
+    var mapDataFromFile: Data? {
+        return try? Data(contentsOf: mapSaveURL)
+    }
+    
+   func loadExperience() {
+       let worldMap: ARWorldMap = {
+           guard let data = mapDataFromFile
+               else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
+           do {
+               guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
+                   else { fatalError("No ARWorldMap in archive.") }
+               return worldMap
+           } catch {
+               fatalError("Can't unarchive ARWorldMap from file data: \(error)")
+           }
+       }()
+       let configuration = ARBodyTrackingConfiguration()
+       configuration.initialWorldMap = worldMap
+       arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+   }
+    
     @IBAction func playbackButtonPressed(sender: UIButton) {
         playback = !playback
         bodyPositionIterator = 0
@@ -124,5 +180,9 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     @IBAction func recordButtonPressed(sender: UIButton) {
         record = !record
+        if !record && bodyPositions.count > 0 {
+            playbackButton.isEnabled = true
+            playbackButton.isHidden = false
+        }
     }
 }
