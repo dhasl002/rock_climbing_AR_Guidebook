@@ -21,7 +21,6 @@ class ViewController: UIViewController, ARSessionDelegate {
     var character: BodyTrackedEntity?
     let characterAnchor = AnchorEntity()
     var placementRaycast: ARTrackedRaycast?
-    var tapPlacementAnchor: AnchorEntity?
     var routeDict = [Int: poseData]()
     let coachingOverlay = ARCoachingOverlayView()
     var activatedAlready = false
@@ -92,6 +91,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         switch cameraDidChangeTrackingState.trackingState {
         case .normal:
             coachingOverlay.setActive(false, animated: true)
+            addRouteLocations()
         case .notAvailable:
             print("tracking not available")
         case .limited:
@@ -99,6 +99,16 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
     }
 
+    func addRouteLocations() {
+        for pose in routeDict {
+            let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
+            let sphere = SCNSphere.init(radius: 1.0)
+            let node = SCNNode.init(geometry: sphere)
+            node.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+            let sphereAnchor = AnchorEntity()
+            sphereAnchor.addChild(character!)
+        }
+    }
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
 //        if !playback {
@@ -126,7 +136,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func loadRoutes() {
-        for i in 0..<5 {
+//        for i in 0..<5 {
 //            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
 //            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
 //            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
@@ -138,6 +148,6 @@ class ViewController: UIViewController, ARSessionDelegate {
 ////                else { fatalError("Could not load route data") }
 //            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
 //            routeDict[i] = tuple
-        }
+//        }
     }
 }
