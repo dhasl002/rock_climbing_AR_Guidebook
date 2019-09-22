@@ -18,42 +18,22 @@ struct poseData {
 class ViewController: UIViewController, ARSessionDelegate {
 
     @IBOutlet var arView: ARView!
-    @IBOutlet var routeButton1: UIButton!
-    @IBOutlet var routeButton2: UIButton!
-    @IBOutlet var routeButton3: UIButton!
-    @IBOutlet var routeButton4: UIButton!
-    @IBOutlet var routeButton5: UIButton!
     var character: BodyTrackedEntity?
     let characterAnchor = AnchorEntity()
     var placementRaycast: ARTrackedRaycast?
     var tapPlacementAnchor: AnchorEntity?
     var routeDict = [Int: poseData]()
+    let coachingOverlay = ARCoachingOverlayView()
+    var activatedAlready = false
+    var count = 0
     
-    lazy var mapSaveURL: URL = {
-        do {
-            return try FileManager.default
-                .url(for: .documentDirectory,
-                     in: .userDomainMask,
-                     appropriateFor: nil,
-                     create: true)
-                .appendingPathComponent("map.arexperience")
-        } catch {
-            fatalError("Can't get file save URL: \(error.localizedDescription)")
-        }
+    lazy var mapDataFromFile: Data = {
+        let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
+        return try! Data(contentsOf: arExperience)
     }()
     
-    var mapDataFromFile: Data? {
-        return try? Data(contentsOf: mapSaveURL)
-    }
-    
-    override func viewDidLoad() {
-    }
-    
-    func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
-        return true
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
+        
         super.viewDidAppear(animated)
         arView.session.delegate = self
         guard ARBodyTrackingConfiguration.isSupported else {
@@ -97,6 +77,12 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        if !activatedAlready && count > 100{
+            print("limited")
+            setupCoachingOverlay()
+            activatedAlready = true
+        }
+        count += 1
 //        if playback {
 //            playbackRecording()
 //        }
@@ -105,8 +91,10 @@ class ViewController: UIViewController, ARSessionDelegate {
     func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
         switch cameraDidChangeTrackingState.trackingState {
         case .normal:
-            print("relocalize")
-        case .notAvailable, .limited:
+            coachingOverlay.setActive(false, animated: true)
+        case .notAvailable:
+            print("tracking not available")
+        case .limited:
             print("tracking limited")
         }
     }
@@ -131,51 +119,25 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func loadWorldTracking() {
-        let worldMap: ARWorldMap = {
-            guard let data = mapDataFromFile
-               else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
-            do {
-               guard let worldMap = try NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: data)
-                   else { fatalError("No ARWorldMap in archive.") }
-               return worldMap
-            } catch {
-               fatalError("Can't unarchive ARWorldMap from file data: \(error)")
-            }
-        }()
+        let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: mapDataFromFile)
         let configuration = ARBodyTrackingConfiguration()
         configuration.initialWorldMap = worldMap
-        arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+        arView.session.run(configuration, options: [])
     }
     
     func loadRoutes() {
         for i in 0..<5 {
-            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-            let positionData = try! Data(contentsOf: positionsUrl)
-            let limbData = try! Data(contentsOf: limbsUrl)
-            guard let bodyPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: , from: positionData)
-                else { fatalError("Could not load route data") }
-//            guard let limbPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARBodyAnchor.self], from: limbData)
+//            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+//            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+//            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+//            let positionData = try! Data(contentsOf: positionsUrl)
+//            let limbData = try! Data(contentsOf: limbsUrl)
+//            guard let bodyPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: , from: positionData)
 //                else { fatalError("Could not load route data") }
-            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
-            routeDict[i] = tuple
+////            guard let limbPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARBodyAnchor.self], from: limbData)
+////                else { fatalError("Could not load route data") }
+//            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
+//            routeDict[i] = tuple
         }
-    }
-    
-    @IBAction func routeButton1Pressed(sender: UIButton) {
-        
-    }
-    @IBAction func routeButton2Pressed(sender: UIButton) {
-        
-    }
-    @IBAction func routeButton3Pressed(sender: UIButton) {
-        
-    }
-    @IBAction func routeButton4Pressed(sender: UIButton) {
-        
-    }
-    @IBAction func routeButton5Pressed(sender: UIButton) {
-        
     }
 }
