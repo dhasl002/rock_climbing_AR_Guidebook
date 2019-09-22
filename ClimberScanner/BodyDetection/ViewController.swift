@@ -16,11 +16,13 @@ class ViewController: UIViewController, ARSessionDelegate {
     @IBOutlet weak var messageLabel: MessageLabel!
     @IBOutlet weak var playbackButton: UIButton!
     @IBOutlet weak var recordButton: UIButton!
+    @IBOutlet weak var saveButton: UIButton!
     var record: Bool!
     var playback: Bool!
     var bodyPositions = [ARBodyAnchor]()
     var limbPositions = [[Transform]]()
     var bodyPositionIterator = 0
+    var saveCount = 0
     
     // The 3D character to display.
     var character: BodyTrackedEntity?
@@ -36,8 +38,10 @@ class ViewController: UIViewController, ARSessionDelegate {
         self.playback = false
         recordButton.isEnabled = false
         playbackButton.isEnabled = false
+        saveButton.isEnabled = false
         recordButton.isHidden = true
         playbackButton.isHidden = true
+        saveButton.isHidden = true
     }
     
     func sessionShouldAttemptRelocalization(_ session: ARSession) -> Bool {
@@ -100,7 +104,6 @@ class ViewController: UIViewController, ARSessionDelegate {
     func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
         switch cameraDidChangeTrackingState.trackingState {
         case .normal:
-            print("normal!")
             recordButton.isEnabled = true
             recordButton.isHidden = false
         case .notAvailable, .limited:
@@ -115,19 +118,12 @@ class ViewController: UIViewController, ARSessionDelegate {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
                 if record {
                     bodyPositions.append(bodyAnchor)
+                    limbPositions.append(character!.jointTransforms)
                 }
-                limbPositions.append(character!.jointTransforms)
-                // Update the position of the character anchor's position.
                 let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
                 characterAnchor.position = bodyPosition
-                // Also copy over the rotation of the body anchor, because the skeleton's pose
-                // in the world is relative to the body anchor's rotation.
                 characterAnchor.orientation = Transform(matrix: bodyAnchor.transform).rotation
-       
                 if let character = character, character.parent == nil {
-                    // Attach the character to its anchor as soon as
-                    // 1. the body anchor was detected and
-                    // 2. the character was loaded.
                     characterAnchor.addChild(character)
                 }
             }
@@ -183,6 +179,48 @@ class ViewController: UIViewController, ARSessionDelegate {
         if !record && bodyPositions.count > 0 {
             playbackButton.isEnabled = true
             playbackButton.isHidden = false
+            saveButton.isEnabled = true
+            saveButton.isHidden = false
         }
+    }
+    
+    @IBAction func saveButtonPressed(sender: UIButton) {
+        print("saving...")
+        let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        var position_url = documentsDir.appendingPathComponent("positions_\(saveCount)")
+        var limbs_url = documentsDir.appendingPathComponent("limbs_\(saveCount)")
+        while FileManager.default.fileExists(atPath: String(position_url.absoluteString.dropFirst(7))) {
+            saveCount += 1
+            position_url = documentsDir.appendingPathComponent("positions_\(saveCount)")
+            limbs_url = documentsDir.appendingPathComponent("limbs_\(saveCount)")
+        }
+        let bodyData = try NSKeyedArchiver.archivedData(withRootObject: bodyPositions)
+        try! bodyData.write(to: position_url, options: [.atomic])
+        var limbStrings = [[String]]()
+        for i in 0..<limbPositions.count {
+            var tmp = [String]()
+            for j in 0..<limbPositions[i].count {
+                tmp.append(convertMatrixToString(limbPositions[i][j].matrix, rowMajor: true))
+            }
+            limbStrings.append(tmp)
+        }
+        let limbData = try NSKeyedArchiver.archivedData(withRootObject: limbStrings)
+        try! limbData.write(to: limbs_url, options: [.atomic])
+        saveCount += 1
+    }
+    
+    internal func convertMatrixToString(_ mat: float4x4, rowMajor: Bool) -> String {
+        var st: String = ""
+        for i in 0...3 {
+            for j in 0...3 {
+                // By default, [i][j] is column-major unlike other languages
+                if rowMajor {
+                    st += mat[j][i].description + ","
+                } else {
+                    st += mat[i][j].description + ","
+                }
+            }
+        }
+        return st
     }
 }

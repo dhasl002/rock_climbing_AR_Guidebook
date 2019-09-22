@@ -25,34 +25,56 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w8a-nW-f7s">
+                                <rect key="frame" x="155" y="122" width="104" height="55"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="104" id="Qdm-Hp-Fgf"/>
+                                </constraints>
+                                <state key="normal" title="record"/>
+                                <connections>
+                                    <action selector="recordButtonPressedWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xQM-Ou-Wyb"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hyT-ua-fiB">
+                                <rect key="frame" x="283" y="122" width="104" height="55"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="104" id="4L5-y8-Rax"/>
+                                </constraints>
+                                <state key="normal" title="save"/>
+                                <connections>
+                                    <action selector="recordButtonPressedWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="kH8-ML-n9f"/>
+                                    <action selector="saveButtonPressedWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="LVw-lK-gZD"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mHH-CQ-A1J">
-                                <rect key="frame" x="38" y="122" width="104" height="55"/>
+                                <rect key="frame" x="20" y="122" width="104" height="55"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
                                 <state key="normal" title="playback"/>
                                 <connections>
                                     <action selector="playbackButtonPressedWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WVz-qB-TSP"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="w8a-nW-f7s">
-                                <rect key="frame" x="38" y="198" width="104" height="55"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <state key="normal" title="record"/>
-                                <connections>
-                                    <action selector="recordButtonPressedWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xQM-Ou-Wyb"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="mHH-CQ-A1J" secondAttribute="bottom" constant="685" id="I2z-hf-Wa4"/>
-                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="38" id="Mdi-yT-7i4"/>
+                            <constraint firstItem="w8a-nW-f7s" firstAttribute="baseline" secondItem="hyT-ua-fiB" secondAttribute="firstBaseline" id="PiV-Ef-h43"/>
+                            <constraint firstItem="hyT-ua-fiB" firstAttribute="leading" secondItem="w8a-nW-f7s" secondAttribute="trailing" constant="24" id="QWj-bO-HHc"/>
+                            <constraint firstItem="w8a-nW-f7s" firstAttribute="centerX" secondItem="g2g-BU-AIQ" secondAttribute="centerX" id="Tga-tJ-Ytz"/>
+                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="top" secondItem="g2g-BU-AIQ" secondAttribute="bottom" constant="33" id="Twr-4g-Kdm"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="hyT-ua-fiB" secondAttribute="trailing" constant="27" id="UjG-OK-Ofa"/>
                             <constraint firstItem="g2g-BU-AIQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="5" id="X4x-SE-jXs"/>
-                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="top" secondItem="g2g-BU-AIQ" secondAttribute="bottom" constant="33" id="fL2-uq-uam"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="mHH-CQ-A1J" secondAttribute="trailing" constant="272" id="gLP-Ic-9h8"/>
+                            <constraint firstItem="w8a-nW-f7s" firstAttribute="firstBaseline" secondItem="hyT-ua-fiB" secondAttribute="baseline" id="bUi-IP-mJi"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="mHH-CQ-A1J" secondAttribute="bottom" constant="685" id="ebA-aB-EnS"/>
+                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="g03-Az-TNi"/>
+                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="baseline" secondItem="w8a-nW-f7s" secondAttribute="baseline" id="hRc-H8-3No"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="g2g-BU-AIQ" secondAttribute="trailing" constant="5" id="iZf-1h-wiB"/>
                             <constraint firstItem="g2g-BU-AIQ" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="5" id="jJJ-bb-OLh"/>
+                            <constraint firstItem="mHH-CQ-A1J" firstAttribute="top" secondItem="w8a-nW-f7s" secondAttribute="top" id="m3A-fB-gLK"/>
+                            <constraint firstItem="w8a-nW-f7s" firstAttribute="leading" secondItem="mHH-CQ-A1J" secondAttribute="trailing" constant="31" id="nVQ-9N-lbv"/>
+                            <constraint firstItem="w8a-nW-f7s" firstAttribute="top" secondItem="hyT-ua-fiB" secondAttribute="top" id="vNv-D4-vc8"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
@@ -61,6 +83,7 @@
                         <outlet property="messageLabel" destination="g2g-BU-AIQ" id="e6f-Gb-gss"/>
                         <outlet property="playbackButton" destination="mHH-CQ-A1J" id="B7l-fY-AO3"/>
                         <outlet property="recordButton" destination="w8a-nW-f7s" id="ztI-fc-qPw"/>
+                        <outlet property="saveButton" destination="hyT-ua-fiB" id="yt4-me-snE"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
