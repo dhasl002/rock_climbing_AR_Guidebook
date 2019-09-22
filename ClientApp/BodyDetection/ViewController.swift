@@ -10,6 +10,11 @@ import RealityKit
 import ARKit
 import Combine
 
+struct poseData {
+    var matrix: [[Transform]]
+    var positions: [ARBodyAnchor]
+}
+
 class ViewController: UIViewController, ARSessionDelegate {
 
     @IBOutlet var arView: ARView!
@@ -22,6 +27,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     let characterAnchor = AnchorEntity()
     var placementRaycast: ARTrackedRaycast?
     var tapPlacementAnchor: AnchorEntity?
+    var routeDict = [Int: poseData]()
     
     lazy var mapSaveURL: URL = {
         do {
@@ -53,7 +59,8 @@ class ViewController: UIViewController, ARSessionDelegate {
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
-        loadExperience()
+        loadWorldTracking()
+        loadRoutes()
         arView.scene.addAnchor(characterAnchor)
     }
     
@@ -67,7 +74,6 @@ class ViewController: UIViewController, ARSessionDelegate {
                 cancellable?.cancel()
         }, receiveValue: { (character: Entity) in
             if let character = character as? BodyTrackedEntity {
-                // Scale the character to human size
                 character.scale = [1.0, 1.0, 1.0]
                 self.character = character
                 cancellable?.cancel()
@@ -124,7 +130,7 @@ class ViewController: UIViewController, ARSessionDelegate {
 //        }
     }
     
-    func loadExperience() {
+    func loadWorldTracking() {
         let worldMap: ARWorldMap = {
             guard let data = mapDataFromFile
                else { fatalError("Map data should already be verified to exist before Load button is enabled.") }
@@ -139,6 +145,22 @@ class ViewController: UIViewController, ARSessionDelegate {
         let configuration = ARBodyTrackingConfiguration()
         configuration.initialWorldMap = worldMap
         arView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+    }
+    
+    func loadRoutes() {
+        for i in 0..<5 {
+            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+            let positionData = try! Data(contentsOf: positionsUrl)
+            let limbData = try! Data(contentsOf: limbsUrl)
+            guard let bodyPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: , from: positionData)
+                else { fatalError("Could not load route data") }
+//            guard let limbPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARBodyAnchor.self], from: limbData)
+//                else { fatalError("Could not load route data") }
+            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
+            routeDict[i] = tuple
+        }
     }
     
     @IBAction func routeButton1Pressed(sender: UIButton) {

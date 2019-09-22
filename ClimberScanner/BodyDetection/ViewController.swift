@@ -182,6 +182,10 @@ class ViewController: UIViewController, ARSessionDelegate {
             saveButton.isEnabled = true
             saveButton.isHidden = false
         }
+        if record {
+            bodyPositions = []
+            limbPositions = []
+        }
     }
     
     @IBAction func saveButtonPressed(sender: UIButton) {
@@ -196,6 +200,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
         let bodyData = try NSKeyedArchiver.archivedData(withRootObject: bodyPositions)
         try! bodyData.write(to: position_url, options: [.atomic])
+        
         var limbStrings = [[String]]()
         for i in 0..<limbPositions.count {
             var tmp = [String]()
