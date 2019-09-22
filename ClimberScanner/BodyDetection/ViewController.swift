@@ -213,7 +213,6 @@ class ViewController: UIViewController, ARSessionDelegate {
         var st: String = ""
         for i in 0...3 {
             for j in 0...3 {
-                // By default, [i][j] is column-major unlike other languages
                 if rowMajor {
                     st += mat[j][i].description + ","
                 } else {

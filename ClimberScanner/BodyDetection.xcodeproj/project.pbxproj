@@ -15,8 +15,6 @@
 		2F60E1E222631E0F00357E98 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F60E1E022631E0F00357E98 /* Main.storyboard */; };
 		2F60E1E422631E0F00357E98 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F60E1E322631E0F00357E98 /* Assets.xcassets */; };
 		2F60E1E722631E0F00357E98 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F60E1E522631E0F00357E98 /* LaunchScreen.storyboard */; };
-		592B38CF2336C4E50076B6B3 /* map.arexperience in Resources */ = {isa = PBXBuildFile; fileRef = 592B38CE2336C4E50076B6B3 /* map.arexperience */; };
-		592B38D32336CB8C0076B6B3 /* test.txt in Resources */ = {isa = PBXBuildFile; fileRef = 592B38D22336CB8C0076B6B3 /* test.txt */; };
 		718E55BC2289F8FF00A9B13B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 718E55BB2289F8FF00A9B13B /* README.md */; };
 /* End PBXBuildFile section */
 
@@ -31,8 +29,6 @@
 		2F60E1E322631E0F00357E98 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F60E1E622631E0F00357E98 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F60E1EB22631E0F00357E98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		592B38CE2336C4E50076B6B3 /* map.arexperience */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = map.arexperience; sourceTree = "<group>"; };
-		592B38D22336CB8C0076B6B3 /* test.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test.txt; sourceTree = "<group>"; };
 		718E55BB2289F8FF00A9B13B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		D34ABD00D34AB41000000001 /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		D3749170D374E6D000000001 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
@@ -71,8 +67,6 @@
 		2F60E1D922631E0F00357E98 /* BodyDetection */ = {
 			isa = PBXGroup;
 			children = (
-				592B38CE2336C4E50076B6B3 /* map.arexperience */,
-				592B38D22336CB8C0076B6B3 /* test.txt */,
 				2F60E1DA22631E0F00357E98 /* AppDelegate.swift */,
 				2F60E1DC22631E0F00357E98 /* ViewController.swift */,
 				0C0AADE32290B23100E0502A /* MessageLabel.swift */,
@@ -164,9 +158,7 @@
 				0C8C7868228387D2006A6EE1 /* character in Resources */,
 				2F60E1E722631E0F00357E98 /* LaunchScreen.storyboard in Resources */,
 				718E55BC2289F8FF00A9B13B /* README.md in Resources */,
-				592B38CF2336C4E50076B6B3 /* map.arexperience in Resources */,
 				2F60E1E422631E0F00357E98 /* Assets.xcassets in Resources */,
-				592B38D32336CB8C0076B6B3 /* test.txt in Resources */,
 				2F60E1E222631E0F00357E98 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
