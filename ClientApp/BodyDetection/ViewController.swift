@@ -38,6 +38,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
+        setUpCharacter()
         loadWorldTracking()
         loadRoutes()
         arView.scene.addAnchor(characterAnchor)
@@ -101,12 +102,13 @@ class ViewController: UIViewController, ARSessionDelegate {
 
     func addRouteLocations() {
         for pose in routeDict {
-            let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
-            let sphere = SCNSphere.init(radius: 1.0)
-            let node = SCNNode.init(geometry: sphere)
-            node.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
-            let sphereAnchor = AnchorEntity()
-            sphereAnchor.addChild(character!)
+            if pose.value.positions.count > 0 {
+                let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
+                let sphereAnchor = AnchorEntity()
+                sphereAnchor.position = initialPosition
+                sphereAnchor.addChild(character!)
+                print("added")
+            }
         }
     }
     
@@ -135,19 +137,40 @@ class ViewController: UIViewController, ARSessionDelegate {
         arView.session.run(configuration, options: [])
     }
     
+    func convertStringToMatrix(string: String) -> float4x4 {
+        let split = string.split(separator: ",")
+        let arr1 = simd_float4(Float(split[0])!, Float(split[1])!, Float(split[2])!, Float(split[3])!)
+        let arr2 = simd_float4(Float(split[4])!, Float(split[5])!, Float(split[6])!, Float(split[7])!)
+        let arr3 = simd_float4(Float(split[8])!, Float(split[9])!, Float(split[10])!, Float(split[11])!)
+        let arr4 = simd_float4(Float(split[12])!, Float(split[13])!, Float(split[14])!, Float(split[15])!)
+        return float4x4.init(arr1, arr2, arr3, arr4)
+
+    }
+
+    func convertStringToTransform(stringMatrix: [[String]]) -> [[Transform]]{
+        var allTransforms = [[Transform]]()
+        for i in 0..<stringMatrix.count {
+            var tmp = [Transform]()
+            for j in 0..<stringMatrix[i].count {
+                tmp.append(Transform.init(matrix: convertStringToMatrix(string: stringMatrix[i][j])))
+            }
+            allTransforms.append(tmp)
+        }
+        return allTransforms
+    }
+    
     func loadRoutes() {
-//        for i in 0..<5 {
-//            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-//            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-//            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-//            let positionData = try! Data(contentsOf: positionsUrl)
-//            let limbData = try! Data(contentsOf: limbsUrl)
-//            guard let bodyPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: , from: positionData)
-//                else { fatalError("Could not load route data") }
-////            guard let limbPositions = try! NSKeyedUnarchiver.unarchivedObject(ofClasses: [ARBodyAnchor.self], from: limbData)
-////                else { fatalError("Could not load route data") }
-//            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
-//            routeDict[i] = tuple
-//        }
+        for i in 0..<5 {
+            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+            let positionData = try! Data(contentsOf: positionsUrl)
+            let limbData = try! Data(contentsOf: limbsUrl)
+            let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
+            let limbPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(limbData)
+//            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
+            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
+            routeDict[i] = tuple
+        }
     }
 }
