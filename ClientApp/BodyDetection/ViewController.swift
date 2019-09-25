@@ -107,7 +107,6 @@ class ViewController: UIViewController, ARSessionDelegate {
                 let sphereAnchor = AnchorEntity()
                 sphereAnchor.position = initialPosition
                 sphereAnchor.addChild(character!)
-                print("added")
             }
         }
     }
