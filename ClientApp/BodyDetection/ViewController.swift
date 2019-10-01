@@ -24,7 +24,6 @@ class ViewController: UIViewController, ARSessionDelegate {
     var routeDict = [Int: poseData]()
     let coachingOverlay = ARCoachingOverlayView()
     var activatedAlready = false
-    var count = 0
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
@@ -77,12 +76,11 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if !activatedAlready && count > 100{
+        if !activatedAlready {
             print("limited")
             setupCoachingOverlay()
             activatedAlready = true
         }
-        count += 1
 //        if playback {
 //            playbackRecording()
 //        }
@@ -101,12 +99,15 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
 
     func addRouteLocations() {
+        print("adding overlay")
         for pose in routeDict {
             if pose.value.positions.count > 0 {
                 let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
                 let sphereAnchor = AnchorEntity()
                 sphereAnchor.position = initialPosition
-                sphereAnchor.addChild(character!)
+                sphereAnchor.addChild(character!.clone(recursive: true))
+                print(sphereAnchor.position)
+                arView.scene.addAnchor(sphereAnchor)
             }
         }
     }
@@ -166,10 +167,12 @@ class ViewController: UIViewController, ARSessionDelegate {
             let positionData = try! Data(contentsOf: positionsUrl)
             let limbData = try! Data(contentsOf: limbsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
+            print((bodyPositions as! [ARBodyAnchor]).count)
             let limbPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(limbData)
 //            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
             let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
             routeDict[i] = tuple
         }
+        print(routeDict.count)
     }
 }
