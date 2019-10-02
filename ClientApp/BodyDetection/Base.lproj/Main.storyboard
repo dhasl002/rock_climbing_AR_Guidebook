@@ -24,11 +24,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <view alpha="0.69999999999999996" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kfi-K0-hZp">
-                                <rect key="frame" x="130" y="200" width="331" height="103"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Use the camera and AR to discover and visualize climbing routes right in front of you" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RB5-au-Dft">
                                 <rect key="frame" x="37" y="379" width="340" height="238"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -36,7 +31,7 @@
                                 <fontDescription key="fontDescription" name="TrebuchetMS" family="Trebuchet MS" pointSize="35"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kKv-XG-UDu">
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sWr-D7-2Xn">
                                 <rect key="frame" x="65" y="766" width="285" height="67"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
@@ -45,11 +40,15 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="entryButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eAC-x7-e1i"/>
-                                    <segue destination="ZEa-RQ-8NR" kind="show" id="7Je-cw-hVm"/>
+                                    <action selector="buttonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="oeg-0N-bkm"/>
                                 </connections>
                             </button>
-                            <view alpha="0.69999999999999996" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Vx-Zh-Zmu">
+                            <view alpha="0.80000000000000004" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kfi-K0-hZp">
+                                <rect key="frame" x="130" y="200" width="331" height="103"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view alpha="0.80000000000000004" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Vx-Zh-Zmu">
                                 <rect key="frame" x="-86" y="80" width="392" height="103"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -73,8 +72,10 @@
                         <viewLayoutGuide key="safeArea" id="dgK-RU-cGS"/>
                     </view>
                     <connections>
-                        <outlet property="entryButton" destination="kKv-XG-UDu" id="XEe-hW-2gN"/>
+                        <outlet property="entryButton" destination="sWr-D7-2Xn" id="rQC-QN-cNT"/>
                         <outlet property="mainView" destination="mvN-Pa-zmL" id="nTh-PB-aPB"/>
+                        <outlet property="titleView1" destination="6Vx-Zh-Zmu" id="2EC-ZH-lv8"/>
+                        <outlet property="titleView2" destination="Kfi-K0-hZp" id="gBa-pN-Nla"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -86,7 +87,7 @@
             <objects>
                 <viewController id="ZEa-RQ-8NR" userLabel="ARView" customClass="ViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="COc-aS-OCM" userLabel="ARView" customClass="ARView" customModule="RealityKit">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
