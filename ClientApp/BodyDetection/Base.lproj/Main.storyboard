@@ -24,11 +24,6 @@
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
-                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iJC-7T-5Qo">
-                                <rect key="frame" x="87" y="384" width="240" height="128"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                            </view>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" text="Use the camera and AR to discover and visualize climbing routes right in front of you" textAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="RB5-au-Dft">
                                 <rect key="frame" x="37" y="379" width="340" height="238"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -46,7 +41,6 @@
                                 </state>
                                 <connections>
                                     <action selector="buttonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="oeg-0N-bkm"/>
-                                    <segue destination="ZEa-RQ-8NR" kind="presentation" identifier="enterAR" id="zbY-Yz-osd"/>
                                 </connections>
                             </button>
                             <view alpha="0.80000000000000004" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kfi-K0-hZp">
@@ -58,6 +52,16 @@
                                 <rect key="frame" x="-86" y="80" width="392" height="103"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iJC-7T-5Qo">
+                                <rect key="frame" x="0.0" y="80" width="306" height="103"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                            </view>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="APw-yX-GHH">
+                                <rect key="frame" x="130" y="200" width="284" height="103"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Indian" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="czR-Wo-d5E">
                                 <rect key="frame" x="-10" y="80" width="305" height="103"/>
@@ -79,8 +83,11 @@
                     </view>
                     <connections>
                         <outlet property="entryButton" destination="sWr-D7-2Xn" id="rQC-QN-cNT"/>
+                        <outlet property="gradientView" destination="iJC-7T-5Qo" id="2jy-fy-Baa"/>
+                        <outlet property="gradientView2" destination="APw-yX-GHH" id="ihL-qu-VUJ"/>
                         <outlet property="indianTitle" destination="czR-Wo-d5E" id="hxn-Jc-enm"/>
                         <outlet property="mainView" destination="mvN-Pa-zmL" id="nTh-PB-aPB"/>
+                        <outlet property="rockTitle" destination="e2M-uF-P0W" id="wK2-qd-l9U"/>
                         <outlet property="textView" destination="RB5-au-Dft" id="wHM-i9-o6h"/>
                         <outlet property="titleView1" destination="6Vx-Zh-Zmu" id="2EC-ZH-lv8"/>
                         <outlet property="titleView2" destination="Kfi-K0-hZp" id="gBa-pN-Nla"/>
@@ -95,11 +102,11 @@
             <objects>
                 <viewController storyboardIdentifier="ARView" title="ARView" id="ZEa-RQ-8NR" userLabel="ARView" customClass="ViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="COc-aS-OCM" userLabel="ARView" customClass="ARView" customModule="RealityKit">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="842"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
-                        <viewLayoutGuide key="safeArea" id="4hy-Nd-OjW"/>
+                        <viewLayoutGuide key="safeArea" id="Ije-6u-bcG"/>
                     </view>
                     <navigationItem key="navigationItem" id="fQS-Iv-bFn"/>
                     <connections>

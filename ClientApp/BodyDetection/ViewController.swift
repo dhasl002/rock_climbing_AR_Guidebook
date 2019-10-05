@@ -23,7 +23,6 @@ class ViewController: UIViewController, ARSessionDelegate {
     var placementRaycast: ARTrackedRaycast?
     var routeDict = [Int: poseData]()
     let coachingOverlay = ARCoachingOverlayView()
-    var activatedAlready = false
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
@@ -41,6 +40,8 @@ class ViewController: UIViewController, ARSessionDelegate {
         loadWorldTracking()
         loadRoutes()
         arView.scene.addAnchor(characterAnchor)
+        setupCoachingOverlay()
+        coachingOverlay.setActive(false, animated: true)
     }
     
     func setUpCharacter() {
@@ -55,6 +56,7 @@ class ViewController: UIViewController, ARSessionDelegate {
             if let character = character as? BodyTrackedEntity {
                 character.scale = [1.0, 1.0, 1.0]
                 self.character = character
+                self.addRouteLocations()
                 cancellable?.cancel()
             } else {
                 print("Error: Unable to load model as BodyTrackedEntity")
@@ -76,30 +78,15 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        if !activatedAlready {
-            print("limited")
-            setupCoachingOverlay()
-            activatedAlready = true
-        }
 //        if playback {
 //            playbackRecording()
 //        }
     }
     
     func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
-        switch cameraDidChangeTrackingState.trackingState {
-        case .normal:
-            coachingOverlay.setActive(false, animated: true)
-            addRouteLocations()
-        case .notAvailable:
-            print("tracking not available")
-        case .limited:
-            print("tracking limited")
-        }
     }
 
     func addRouteLocations() {
-        print("adding overlay")
         for pose in routeDict {
             if pose.value.positions.count > 0 {
                 let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
