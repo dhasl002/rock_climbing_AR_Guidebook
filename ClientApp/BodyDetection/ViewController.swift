@@ -37,11 +37,9 @@ class ViewController: UIViewController, ARSessionDelegate {
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
-//        setUpCharacter()
         loadWorldTracking()
         loadRoutes()
-        self.addRouteLocations()
-//        arView.scene.addAnchor(characterAnchor)
+        addRoutes()
         setupCoachingOverlay()
         coachingOverlay.setActive(false, animated: true)
     }
@@ -86,31 +84,36 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
     }
+    
+    func addStartWaypoints(_ pose: poseData) {
+        let initialPosition = simd_make_float3(pose.positions[0].transform.columns.3)
+        let waypoint = SCNScene(named: "waypoint.scn")!
+        waypoint.rootNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+        waypoint.rootNode.scale = SCNVector3(0.05, 0.05, 0.05)
+        arView.scene.rootNode.addChildNode(waypoint.rootNode)
+    }
+    
+    func addRoutePreview(_ pose: poseData) {
+        var climberPositions = [SCNVector3]()
+        for position in pose.positions {
+            let positionTransform = position.transform.columns.3
+            let vector = SCNVector3(positionTransform.x, positionTransform.y, positionTransform.z)
+            climberPositions.append(vector)
+        }
+        let lineGeometry = SCNGeometry.line(points: climberPositions, radius: 0.1).0
+        let lineNode = SCNNode()
+        let material = SCNMaterial()
+        material.diffuse.contents = UIColor.purple.cgColor
+        lineNode.geometry = lineGeometry
+        lineNode.geometry?.firstMaterial = material
+        arView.scene.rootNode.addChildNode(lineNode)
+    }
 
-    func addRouteLocations() {
-//        arView.scene.rootNode.addChildNode(waypoint.rootNode)
-        
+    func addRoutes() {
         for pose in routeDict {
             if pose.value.positions.count > 0 {
-                let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
-                let waypoint = SCNScene(named: "waypoint.scn")!
-                waypoint.rootNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
-                waypoint.rootNode.scale = SCNVector3(0.05, 0.05, 0.05)
-                arView.scene.rootNode.addChildNode(waypoint.rootNode)
-                
-                let lineGeometry = SCNGeometry.line(points: [
-                    SCNVector3(0.1,0,0),
-                    SCNVector3(0.3,1,0.1),
-                    SCNVector3(0,2,0.1),
-                    SCNVector3(-0.1,3,0)
-                ], radius: 0.1).0
-                let lineNode = SCNNode()
-                let material = SCNMaterial()
-                material.diffuse.contents = UIColor.purple.cgColor
-                lineNode.geometry = lineGeometry
-                lineNode.geometry?.firstMaterial = material
-                lineNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
-                arView.scene.rootNode.addChildNode(lineNode)
+                addStartWaypoints(pose.value)
+                addRoutePreview(pose.value)
             }
         }
     }
