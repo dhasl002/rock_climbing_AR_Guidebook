@@ -101,7 +101,7 @@
         <scene sceneID="lut-lf-yXx">
             <objects>
                 <viewController storyboardIdentifier="ARView" title="ARView" id="ZEa-RQ-8NR" userLabel="ARView" customClass="ViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="COc-aS-OCM" userLabel="ARView" customClass="ARView" customModule="RealityKit">
+                    <view key="view" contentMode="scaleToFill" id="COc-aS-OCM" userLabel="ARView" customClass="ARSCNView">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -110,7 +110,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="fQS-Iv-bFn"/>
                     <connections>
-                        <outlet property="arView" destination="COc-aS-OCM" id="3oa-xN-SwL"/>
+                        <outlet property="arView" destination="COc-aS-OCM" id="6n8-Kx-qwp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gBU-oU-4xT" sceneMemberID="firstResponder"/>

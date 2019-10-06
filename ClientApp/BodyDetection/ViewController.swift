@@ -9,6 +9,7 @@ import UIKit
 import RealityKit
 import ARKit
 import Combine
+import SCNLine
 
 struct poseData {
     var matrix: [[Transform]]
@@ -17,7 +18,7 @@ struct poseData {
 
 class ViewController: UIViewController, ARSessionDelegate {
 
-    @IBOutlet var arView: ARView!
+    @IBOutlet var arView: ARSCNView!
     var character: BodyTrackedEntity?
     let characterAnchor = AnchorEntity()
     var placementRaycast: ARTrackedRaycast?
@@ -36,10 +37,11 @@ class ViewController: UIViewController, ARSessionDelegate {
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
-        setUpCharacter()
+//        setUpCharacter()
         loadWorldTracking()
         loadRoutes()
-        arView.scene.addAnchor(characterAnchor)
+        self.addRouteLocations()
+//        arView.scene.addAnchor(characterAnchor)
         setupCoachingOverlay()
         coachingOverlay.setActive(false, animated: true)
     }
@@ -56,7 +58,6 @@ class ViewController: UIViewController, ARSessionDelegate {
             if let character = character as? BodyTrackedEntity {
                 character.scale = [1.0, 1.0, 1.0]
                 self.character = character
-                self.addRouteLocations()
                 cancellable?.cancel()
             } else {
                 print("Error: Unable to load model as BodyTrackedEntity")
@@ -87,14 +88,29 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
 
     func addRouteLocations() {
+//        arView.scene.rootNode.addChildNode(waypoint.rootNode)
+        
         for pose in routeDict {
             if pose.value.positions.count > 0 {
                 let initialPosition = simd_make_float3(pose.value.positions[0].transform.columns.3)
-                let sphereAnchor = AnchorEntity()
-                sphereAnchor.position = initialPosition
-                sphereAnchor.addChild(character!.clone(recursive: true))
-                print(sphereAnchor.position)
-                arView.scene.addAnchor(sphereAnchor)
+                let waypoint = SCNScene(named: "waypoint.scn")!
+                waypoint.rootNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+                waypoint.rootNode.scale = SCNVector3(0.05, 0.05, 0.05)
+                arView.scene.rootNode.addChildNode(waypoint.rootNode)
+                
+                let lineGeometry = SCNGeometry.line(points: [
+                    SCNVector3(0.1,0,0),
+                    SCNVector3(0.3,1,0.1),
+                    SCNVector3(0,2,0.1),
+                    SCNVector3(-0.1,3,0)
+                ], radius: 0.1).0
+                let lineNode = SCNNode()
+                let material = SCNMaterial()
+                material.diffuse.contents = UIColor.purple.cgColor
+                lineNode.geometry = lineGeometry
+                lineNode.geometry?.firstMaterial = material
+                lineNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+                arView.scene.rootNode.addChildNode(lineNode)
             }
         }
     }
