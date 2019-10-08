@@ -15,9 +15,9 @@
 		2F60E1E422631E0F00357E98 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F60E1E322631E0F00357E98 /* Assets.xcassets */; };
 		2F60E1E722631E0F00357E98 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F60E1E522631E0F00357E98 /* LaunchScreen.storyboard */; };
 		590F6B802342F3BB007EA35F /* landingPage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 590F6B7F2342F3BB007EA35F /* landingPage.jpg */; };
-		593F1FE2234965F1001DDDE9 /* waypoint.dae in Resources */ = {isa = PBXBuildFile; fileRef = 593F1FE1234965F1001DDDE9 /* waypoint.dae */; };
 		593F1FE4234966EC001DDDE9 /* map_pin_baseColor.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 593F1FE3234966EC001DDDE9 /* map_pin_baseColor.jpeg */; };
-		593F1FE62349676E001DDDE9 /* waypoint.scn in Resources */ = {isa = PBXBuildFile; fileRef = 593F1FE52349676E001DDDE9 /* waypoint.scn */; };
+		595AD9F3234C1FF600D52E44 /* waypoint.png in Resources */ = {isa = PBXBuildFile; fileRef = 595AD9F2234C1FF500D52E44 /* waypoint.png */; };
+		595AD9F5234C227300D52E44 /* grades in Resources */ = {isa = PBXBuildFile; fileRef = 595AD9F4234C227300D52E44 /* grades */; };
 		597F17082337FB3B0049A40B /* VCExtend-coachingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597F17072337FB3B0049A40B /* VCExtend-coachingOverlay.swift */; };
 		59D68A992342EFCD00276B92 /* EntryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59D68A982342EFCD00276B92 /* EntryViewController.swift */; };
 		718E55BC2289F8FF00A9B13B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 718E55BB2289F8FF00A9B13B /* README.md */; };
@@ -36,9 +36,9 @@
 		2F60E1E622631E0F00357E98 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F60E1EB22631E0F00357E98 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		590F6B7F2342F3BB007EA35F /* landingPage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = landingPage.jpg; sourceTree = "<group>"; };
-		593F1FE1234965F1001DDDE9 /* waypoint.dae */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml.dae; path = waypoint.dae; sourceTree = "<group>"; };
 		593F1FE3234966EC001DDDE9 /* map_pin_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = map_pin_baseColor.jpeg; sourceTree = "<group>"; };
-		593F1FE52349676E001DDDE9 /* waypoint.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = waypoint.scn; sourceTree = "<group>"; };
+		595AD9F2234C1FF500D52E44 /* waypoint.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waypoint.png; sourceTree = "<group>"; };
+		595AD9F4234C227300D52E44 /* grades */ = {isa = PBXFileReference; lastKnownFileType = folder; path = grades; sourceTree = "<group>"; };
 		597F17072337FB3B0049A40B /* VCExtend-coachingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VCExtend-coachingOverlay.swift"; sourceTree = "<group>"; };
 		59D68A982342EFCD00276B92 /* EntryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryViewController.swift; sourceTree = "<group>"; };
 		718E55BB2289F8FF00A9B13B /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
@@ -84,6 +84,7 @@
 		2F60E1D922631E0F00357E98 /* BodyDetection */ = {
 			isa = PBXGroup;
 			children = (
+				595AD9F4234C227300D52E44 /* grades */,
 				590F6B7F2342F3BB007EA35F /* landingPage.jpg */,
 				2F60E1DA22631E0F00357E98 /* AppDelegate.swift */,
 				2F60E1DC22631E0F00357E98 /* ViewController.swift */,
@@ -92,8 +93,7 @@
 				0C71C055228FA198003621C4 /* Utilities.swift */,
 				2F60E1EB22631E0F00357E98 /* Info.plist */,
 				593F1FE3234966EC001DDDE9 /* map_pin_baseColor.jpeg */,
-				593F1FE1234965F1001DDDE9 /* waypoint.dae */,
-				593F1FE52349676E001DDDE9 /* waypoint.scn */,
+				595AD9F2234C1FF500D52E44 /* waypoint.png */,
 				0C8C7867228387D2006A6EE1 /* character */,
 				2F60E1E022631E0F00357E98 /* Main.storyboard */,
 				2F60E1E322631E0F00357E98 /* Assets.xcassets */,
@@ -197,14 +197,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				590F6B802342F3BB007EA35F /* landingPage.jpg in Resources */,
-				593F1FE62349676E001DDDE9 /* waypoint.scn in Resources */,
 				0C8C7868228387D2006A6EE1 /* character in Resources */,
-				593F1FE2234965F1001DDDE9 /* waypoint.dae in Resources */,
+				595AD9F3234C1FF600D52E44 /* waypoint.png in Resources */,
 				2F60E1E722631E0F00357E98 /* LaunchScreen.storyboard in Resources */,
 				718E55BC2289F8FF00A9B13B /* README.md in Resources */,
 				2F60E1E422631E0F00357E98 /* Assets.xcassets in Resources */,
 				2F60E1E222631E0F00357E98 /* Main.storyboard in Resources */,
 				593F1FE4234966EC001DDDE9 /* map_pin_baseColor.jpeg in Resources */,
+				595AD9F5234C227300D52E44 /* grades in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

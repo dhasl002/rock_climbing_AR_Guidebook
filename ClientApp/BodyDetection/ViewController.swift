@@ -87,10 +87,31 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func addStartWaypoints(_ pose: poseData) {
         let initialPosition = simd_make_float3(pose.positions[0].transform.columns.3)
-        let waypoint = SCNScene(named: "waypoint.scn")!
-        waypoint.rootNode.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
-        waypoint.rootNode.scale = SCNVector3(0.05, 0.05, 0.05)
-        arView.scene.rootNode.addChildNode(waypoint.rootNode)
+        let image = UIImage(named: "waypoint.png")!
+        let grade = UIImage(named: "grades/V1.png")!
+        let gradeMaterial = SCNMaterial()
+        gradeMaterial.diffuse.contents = grade
+//        gradeMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(1,-1,1)
+        
+        let waypointBackground = SCNNode()
+        waypointBackground.geometry = SCNPlane(width: 0.5, height: 0.5)
+        waypointBackground.geometry?.firstMaterial?.diffuse.contents = image
+        waypointBackground.geometry?.firstMaterial?.isDoubleSided = true
+        waypointBackground.renderingOrder = 1
+        waypointBackground.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+        arView.scene.rootNode.addChildNode(waypointBackground)
+        
+        let waypointText = SCNNode()
+        waypointText.geometry = SCNPlane(width: 0.2, height: 0.2)
+        waypointText.geometry?.firstMaterial = gradeMaterial
+        waypointText.geometry?.firstMaterial?.isDoubleSided = true
+        waypointText.renderingOrder = 0
+        waypointText.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+        waypointText.position.x += waypointText.worldFront.x * 0.0001
+        waypointText.position.y += waypointText.worldFront.y * 0.0001
+        waypointText.position.z += waypointText.worldFront.z * 0.0001
+        waypointText.rotation.y += Float.pi / 2.0
+        arView.scene.rootNode.addChildNode(waypointText)
     }
     
     func addRoutePreview(_ pose: poseData) {
@@ -106,6 +127,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         material.diffuse.contents = UIColor.purple.cgColor
         lineNode.geometry = lineGeometry
         lineNode.geometry?.firstMaterial = material
+        lineNode.opacity = 0.5
         arView.scene.rootNode.addChildNode(lineNode)
     }
 
@@ -166,13 +188,14 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
     
     func loadRoutes() {
-        for i in 0..<5 {
+        for i in 0..<4 {
             let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
             let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
             let positionData = try! Data(contentsOf: positionsUrl)
             let limbData = try! Data(contentsOf: limbsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
+            print(bodyPositions)
             print((bodyPositions as! [ARBodyAnchor]).count)
             let limbPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(limbData)
 //            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
