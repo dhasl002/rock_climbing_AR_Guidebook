@@ -57,20 +57,22 @@ class ViewController: UIViewController, ARSessionDelegate {
             let bodyAnchor = bodyPositions[bodyPositionIterator]
             let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
             let bodyRotation = Transform(matrix: bodyAnchor.transform).rotation
-            let skeleton = bodyPositions0[bodyPositionIterator]
-            
-            var NSValueArray = [NSValue]()
-            for jointTransform in skeleton.skeleton.jointLocalTransforms {
-                let matrix = SCNMatrix4.init(m11: jointTransform.columns.0.x, m12: jointTransform.columns.0.y, m13: jointTransform.columns.0.z, m14: jointTransform.columns.0.w, m21: jointTransform.columns.1.x, m22: jointTransform.columns.1.y, m23: jointTransform.columns.1.z, m24: jointTransform.columns.1.w, m31: jointTransform.columns.2.x, m32: jointTransform.columns.2.y, m33: jointTransform.columns.2.z, m34: jointTransform.columns.2.w, m41: jointTransform.columns.3.x, m42: jointTransform.columns.3.y, m43: jointTransform.columns.3.z, m44: jointTransform.columns.3.w)
-                NSValueArray.append(NSValue.init(scnMatrix4: matrix))
-            }
-            
-            
-
-            let skinner = SCNSkinner.init(baseGeometry: climber.rootNode.geometry, bones: climber.rootNode.childNodes, boneInverseBindTransforms: NSValueArray, boneWeights: (climber.rootNode.geometry?.sources[0])!, boneIndices: (climber.rootNode.geometry?.sources[0])!)
-            climber.rootNode.skinner = skinner
             climber.rootNode.position = SCNVector3(bodyPosition.x, bodyPosition.y, bodyPosition.z)
             climber.rootNode.orientation = SCNVector4(bodyRotation.vector.x, bodyRotation.vector.y, bodyRotation.vector.z, bodyRotation.vector.w)
+            
+            let skeleton = climber.rootNode.childNode(withName: "root", recursively: true)!
+            var iterator = 0
+            skeleton.enumerateChildNodes { (node, stop) in
+                print(node.name)
+                node.transform = SCNMatrix4(limbPositions[bodyPositionIterator][iterator].matrix.inverse)
+                iterator += 1
+            }
+            print(iterator)
+            print(limbPositions[bodyPositionIterator].count)
+//            for i in 0..<skeleton.childNodes.count {
+//                print(skeleton.childNodes[i].name)
+//                skeleton.childNodes[i].transform = SCNMatrix4(limbPositions[bodyPositionIterator][i].matrix)
+//            }
             bodyPositionIterator += 1
         }
     }
@@ -178,7 +180,7 @@ class ViewController: UIViewController, ARSessionDelegate {
         for i in 1..<2 {
             let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-            let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+            let limbsUrl = documentsDir.appendingPathComponent("limbs_\(i)")
             let positionData = try! Data(contentsOf: positionsUrl)
             let limbData = try! Data(contentsOf: limbsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)

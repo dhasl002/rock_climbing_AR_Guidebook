@@ -65,7 +65,7 @@ class RecorderVC: UIViewController, ARSessionDelegate {
         
         // Asynchronously load the 3D character.
         var cancellable: AnyCancellable? = nil
-        cancellable = Entity.loadBodyTrackedAsync(named: "character/robot").sink(
+        cancellable = Entity.loadBodyTrackedAsync(named: "  robot").sink(
             receiveCompletion: { completion in
                 if case let .failure(error) = completion {
                     print("Error: Unable to load model: \(error.localizedDescription)")
@@ -89,6 +89,7 @@ class RecorderVC: UIViewController, ARSessionDelegate {
             return
         }
         character?.jointTransforms = limbPositions[bodyPositionIterator]
+        print(character?.jointNames)
         let bodyAnchor = bodyPositions[bodyPositionIterator]
         let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
         characterAnchor.position = bodyPosition
