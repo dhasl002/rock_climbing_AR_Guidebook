@@ -10,6 +10,7 @@ import RealityKit
 import ARKit
 import Combine
 import SCNLine
+import SceneKit.ModelIO
 
 struct poseData {
     var matrix: [[Transform]]
@@ -19,11 +20,12 @@ struct poseData {
 class ViewController: UIViewController, ARSessionDelegate {
 
     @IBOutlet var arView: ARSCNView!
-    var character: BodyTrackedEntity?
-    let characterAnchor = AnchorEntity()
+    var climber = SCNScene()
     var placementRaycast: ARTrackedRaycast?
     var routeDict = [Int: poseData]()
     let coachingOverlay = ARCoachingOverlayView()
+    var playback = false
+    var bodyPositionIterator = 0
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
@@ -31,87 +33,68 @@ class ViewController: UIViewController, ARSessionDelegate {
     }()
     
     override func viewDidAppear(_ animated: Bool) {
-        
         super.viewDidAppear(animated)
         arView.session.delegate = self
         guard ARBodyTrackingConfiguration.isSupported else {
             fatalError("This feature is only supported on devices with an A12 chip")
         }
+        setupCoachingOverlay()
         loadWorldTracking()
         loadRoutes()
         addRoutes()
-        setupCoachingOverlay()
+
         coachingOverlay.setActive(false, animated: true)
     }
     
-    func setUpCharacter() {
-        var cancellable: AnyCancellable? = nil
-        cancellable = Entity.loadBodyTrackedAsync(named: "character/robot").sink(
-            receiveCompletion: { completion in
-                if case let .failure(error) = completion {
-                    print("Error: Unable to load model: \(error.localizedDescription)")
-                }
-                cancellable?.cancel()
-        }, receiveValue: { (character: Entity) in
-            if let character = character as? BodyTrackedEntity {
-                character.scale = [1.0, 1.0, 1.0]
-                self.character = character
-                cancellable?.cancel()
-            } else {
-                print("Error: Unable to load model as BodyTrackedEntity")
-            }
-        })
-    }
-    
-    func playbackRecording() {
-//        if bodyPositionIterator >= bodyPositions.count-1 {
-//            bodyPositionIterator = 0
-//            return
-//        }
-//        character?.jointTransforms = limbPositions[bodyPositionIterator]
-//        let bodyAnchor = bodyPositions[bodyPositionIterator]
-//        let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
-//        characterAnchor.position = bodyPosition
-//        characterAnchor.orientation = Transform(matrix: bodyAnchor.transform).rotation
-//        bodyPositionIterator += 1
-    }
-    
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-//        if playback {
-//            playbackRecording()
-//        }
+        if playback {
+            let bodyPositions = routeDict[1]!.positions
+            let limbPositions = routeDict[1]!.matrix
+            if bodyPositionIterator >= bodyPositions.count-1 {
+                bodyPositionIterator = 0
+                return
+            }
+            let bodyAnchor = bodyPositions[bodyPositionIterator]
+            let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
+            let bodyRotation = Transform(matrix: bodyAnchor.transform).rotation
+            let skeleton = bodyPositions0[bodyPositionIterator]
+            
+            var NSValueArray = [NSValue]()
+            for jointTransform in skeleton.skeleton.jointLocalTransforms {
+                let matrix = SCNMatrix4.init(m11: jointTransform.columns.0.x, m12: jointTransform.columns.0.y, m13: jointTransform.columns.0.z, m14: jointTransform.columns.0.w, m21: jointTransform.columns.1.x, m22: jointTransform.columns.1.y, m23: jointTransform.columns.1.z, m24: jointTransform.columns.1.w, m31: jointTransform.columns.2.x, m32: jointTransform.columns.2.y, m33: jointTransform.columns.2.z, m34: jointTransform.columns.2.w, m41: jointTransform.columns.3.x, m42: jointTransform.columns.3.y, m43: jointTransform.columns.3.z, m44: jointTransform.columns.3.w)
+                NSValueArray.append(NSValue.init(scnMatrix4: matrix))
+            }
+            
+            
+
+            let skinner = SCNSkinner.init(baseGeometry: climber.rootNode.geometry, bones: climber.rootNode.childNodes, boneInverseBindTransforms: NSValueArray, boneWeights: (climber.rootNode.geometry?.sources[0])!, boneIndices: (climber.rootNode.geometry?.sources[0])!)
+            climber.rootNode.skinner = skinner
+            climber.rootNode.position = SCNVector3(bodyPosition.x, bodyPosition.y, bodyPosition.z)
+            climber.rootNode.orientation = SCNVector4(bodyRotation.vector.x, bodyRotation.vector.y, bodyRotation.vector.z, bodyRotation.vector.w)
+            bodyPositionIterator += 1
+        }
     }
     
     func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
     }
     
+    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
+    }
+    
     func addStartWaypoints(_ pose: poseData) {
         let initialPosition = simd_make_float3(pose.positions[0].transform.columns.3)
-        let image = UIImage(named: "waypoint.png")!
-        let grade = UIImage(named: "grades/V1.png")!
+        let gradeImage = UIImage(named: "grades/V1.png")!
         let gradeMaterial = SCNMaterial()
-        gradeMaterial.diffuse.contents = grade
-//        gradeMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(1,-1,1)
+        gradeMaterial.diffuse.contents = gradeImage
         
         let waypointBackground = SCNNode()
         waypointBackground.geometry = SCNPlane(width: 0.5, height: 0.5)
-        waypointBackground.geometry?.firstMaterial?.diffuse.contents = image
+        waypointBackground.geometry?.firstMaterial?.diffuse.contents = gradeImage
         waypointBackground.geometry?.firstMaterial?.isDoubleSided = true
-        waypointBackground.renderingOrder = 1
+        waypointBackground.renderingOrder = 0
+        waypointBackground.name = "v1-test"
         waypointBackground.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
         arView.scene.rootNode.addChildNode(waypointBackground)
-        
-        let waypointText = SCNNode()
-        waypointText.geometry = SCNPlane(width: 0.2, height: 0.2)
-        waypointText.geometry?.firstMaterial = gradeMaterial
-        waypointText.geometry?.firstMaterial?.isDoubleSided = true
-        waypointText.renderingOrder = 0
-        waypointText.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
-        waypointText.position.x += waypointText.worldFront.x * 0.0001
-        waypointText.position.y += waypointText.worldFront.y * 0.0001
-        waypointText.position.z += waypointText.worldFront.z * 0.0001
-        waypointText.rotation.y += Float.pi / 2.0
-        arView.scene.rootNode.addChildNode(waypointText)
     }
     
     func addRoutePreview(_ pose: poseData) {
@@ -125,9 +108,10 @@ class ViewController: UIViewController, ARSessionDelegate {
         let lineNode = SCNNode()
         let material = SCNMaterial()
         material.diffuse.contents = UIColor.purple.cgColor
+        lineNode.renderingOrder = 1
         lineNode.geometry = lineGeometry
         lineNode.geometry?.firstMaterial = material
-        lineNode.opacity = 0.5
+        lineNode.opacity = 0.9
         arView.scene.rootNode.addChildNode(lineNode)
     }
 
@@ -140,31 +124,34 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
     }
     
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-//        if !playback {
-//            for anchor in anchors {
-//                guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
-//                if record {
-//                    bodyPositions.append(bodyAnchor)
-//                    limbPositions.append(character!.jointTransforms)
-//                }
-//                let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
-//                characterAnchor.position = bodyPosition
-//                characterAnchor.orientation = Transform(matrix: bodyAnchor.transform).rotation
-//                if let character = character, character.parent == nil {
-//                    characterAnchor.addChild(character)
-//                }
-//            }
-//        }
+    func playSelectedRoute() {
+        guard let url = Bundle.main.url(forResource: "robot", withExtension: "usdz") else { fatalError() }
+        let mdlAsset = MDLAsset(url: url)
+        climber = SCNScene(mdlAsset: mdlAsset)
+        arView.scene.rootNode.addChildNode(climber.rootNode)
+        playback = true
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let currentTouchLocation = touches.first?.location(in: self.arView),
+            let hitTestResultNode = self.arView.hitTest(currentTouchLocation, options: nil).first?.node else { return }
+        if hitTestResultNode.name == "v1-test" {
+            self.arView.scene.rootNode.enumerateChildNodes { (node, stop) in
+                let fadeOutAction = SCNAction.fadeOut(duration: 1.0)
+                fadeOutAction.timingMode = .easeInEaseOut
+                node.runAction(fadeOutAction)
+            }
+            playSelectedRoute()
+        }
+    }
+
     func loadWorldTracking() {
         let worldMap = try! NSKeyedUnarchiver.unarchivedObject(ofClass: ARWorldMap.self, from: mapDataFromFile)
         let configuration = ARBodyTrackingConfiguration()
         configuration.initialWorldMap = worldMap
         arView.session.run(configuration, options: [])
     }
-    
+
     func convertStringToMatrix(string: String) -> float4x4 {
         let split = string.split(separator: ",")
         let arr1 = simd_float4(Float(split[0])!, Float(split[1])!, Float(split[2])!, Float(split[3])!)
@@ -186,20 +173,18 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
         return allTransforms
     }
-    
+
     func loadRoutes() {
-        for i in 0..<4 {
+        for i in 1..<2 {
             let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
             let limbsUrl = documentsDir.appendingPathComponent("positions_\(i)")
             let positionData = try! Data(contentsOf: positionsUrl)
             let limbData = try! Data(contentsOf: limbsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
-            print(bodyPositions)
-            print((bodyPositions as! [ARBodyAnchor]).count)
             let limbPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(limbData)
-//            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
-            let tuple = poseData(matrix: [], positions: bodyPositions as! [ARBodyAnchor])
+            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
+            let tuple = poseData(matrix: limbTransforms, positions: bodyPositions as! [ARBodyAnchor])
             routeDict[i] = tuple
         }
         print(routeDict.count)

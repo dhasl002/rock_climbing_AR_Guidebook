@@ -8,11 +8,11 @@
 
 import UIKit
 import Foundation
-//-86
 
 class EntryViewController: UIViewController {
     @IBOutlet var mainView: UIView!
     @IBOutlet var entryButton: UIButton!
+    @IBOutlet var recorderButton: UIButton!
     @IBOutlet var titleView1: UIView!
     @IBOutlet var titleView2: UIView!
     @IBOutlet var gradientView: UIView!
@@ -57,11 +57,15 @@ class EntryViewController: UIViewController {
         gradientView2.mask = rockTitle
     }
     
-    @IBAction func buttonPressed() {
-        let vc = self.storyboard?.instantiateViewController(withIdentifier: "ARView") as! ViewController
+    @IBAction func viewerButtonPressed() {
+        let vc = self.storyboard?.instantiateViewController(withIdentifier: "Viewer") as! ViewController
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
     
-    
+    @IBAction func recorderButtonPressed() {
+        let vc = self.storyboard?.instantiateViewController(withIdentifier: "Recorder") as! RecorderVC
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+    }
 }

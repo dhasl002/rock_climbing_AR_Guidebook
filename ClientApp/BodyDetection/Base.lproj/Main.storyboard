@@ -10,7 +10,7 @@
         <!--Entry View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="EntryViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LandingPage" id="BYZ-38-t0r" customClass="EntryViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="mvN-Pa-zmL">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -31,6 +31,15 @@
                                 <fontDescription key="fontDescription" name="TrebuchetMS" family="Trebuchet MS" pointSize="35"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="d4S-Eb-fxo">
+                                <rect key="frame" x="338" y="90" width="68" height="90"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="recorderButtonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="PdJ-Fo-8ZI"/>
+                                </connections>
+                            </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sWr-D7-2Xn">
                                 <rect key="frame" x="65" y="766" width="285" height="67"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -40,7 +49,7 @@
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
                                 <connections>
-                                    <action selector="buttonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="oeg-0N-bkm"/>
+                                    <action selector="viewerButtonPressed" destination="BYZ-38-t0r" eventType="touchUpInside" id="oeg-0N-bkm"/>
                                 </connections>
                             </button>
                             <view alpha="0.80000000000000004" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kfi-K0-hZp">
@@ -67,14 +76,14 @@
                                 <rect key="frame" x="-10" y="80" width="305" height="103"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="78"/>
-                                <color key="textColor" systemColor="linkColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="textColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Rock" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e2M-uF-P0W">
                                 <rect key="frame" x="140" y="200" width="284" height="103"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="78"/>
-                                <color key="textColor" systemColor="linkColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <color key="textColor" systemColor="linkColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -87,6 +96,7 @@
                         <outlet property="gradientView2" destination="APw-yX-GHH" id="ihL-qu-VUJ"/>
                         <outlet property="indianTitle" destination="czR-Wo-d5E" id="hxn-Jc-enm"/>
                         <outlet property="mainView" destination="mvN-Pa-zmL" id="nTh-PB-aPB"/>
+                        <outlet property="recorderButton" destination="d4S-Eb-fxo" id="0MJ-d6-Jzo"/>
                         <outlet property="rockTitle" destination="e2M-uF-P0W" id="wK2-qd-l9U"/>
                         <outlet property="textView" destination="RB5-au-Dft" id="wHM-i9-o6h"/>
                         <outlet property="titleView1" destination="6Vx-Zh-Zmu" id="2EC-ZH-lv8"/>
@@ -100,7 +110,7 @@
         <!--ARView-->
         <scene sceneID="lut-lf-yXx">
             <objects>
-                <viewController storyboardIdentifier="ARView" title="ARView" id="ZEa-RQ-8NR" userLabel="ARView" customClass="ViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="Viewer" title="ARView" id="ZEa-RQ-8NR" userLabel="ARView" customClass="ViewController" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="COc-aS-OCM" userLabel="ARView" customClass="ARSCNView">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -116,6 +126,83 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gBU-oU-4xT" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="880" y="133"/>
+        </scene>
+        <!--ARView-->
+        <scene sceneID="yuL-oe-HJx">
+            <objects>
+                <viewController storyboardIdentifier="Recorder" id="TnC-in-jWK" userLabel="ARView" customClass="RecorderVC" customModule="ClientApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="rVP-5Y-4zx" userLabel="ARView" customClass="ARView" customModule="RealityKit">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKA-oe-lPW">
+                                <rect key="frame" x="155" y="147" width="104" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="104" id="Auj-ZY-Ui1"/>
+                                </constraints>
+                                <state key="normal" title="record"/>
+                                <connections>
+                                    <action selector="recordButtonPressedWithSender:" destination="TnC-in-jWK" eventType="touchUpInside" id="dim-3r-8dX"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OhX-Rc-EwF">
+                                <rect key="frame" x="283" y="147" width="104" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="104" id="Qu1-tg-9qO"/>
+                                </constraints>
+                                <state key="normal" title="save"/>
+                                <connections>
+                                    <action selector="recordButtonPressedWithSender:" destination="TnC-in-jWK" eventType="touchUpInside" id="ft5-fc-yhE"/>
+                                    <action selector="saveButtonPressedWithSender:" destination="TnC-in-jWK" eventType="touchUpInside" id="uuK-4E-iSd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HkB-eP-JJ0">
+                                <rect key="frame" x="20" y="147" width="104" height="30"/>
+                                <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <state key="normal" title="playback"/>
+                                <connections>
+                                    <action selector="playbackButtonPressedWithSender:" destination="TnC-in-jWK" eventType="touchUpInside" id="iZo-lv-sse"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" adjustsImageWhenHighlighted="NO" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I7f-bs-LhB">
+                                <rect key="frame" x="299" y="30" width="88" height="109"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" systemColor="systemGreenColor" red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="backButtonPressed" destination="TnC-in-jWK" eventType="touchUpInside" id="twX-6X-NLz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="6Lv-Nk-yNi" firstAttribute="trailing" secondItem="OhX-Rc-EwF" secondAttribute="trailing" constant="27" id="Bsc-vo-mFa"/>
+                            <constraint firstItem="YKA-oe-lPW" firstAttribute="firstBaseline" secondItem="OhX-Rc-EwF" secondAttribute="baseline" id="EMa-1G-9qX"/>
+                            <constraint firstItem="HkB-eP-JJ0" firstAttribute="baseline" secondItem="YKA-oe-lPW" secondAttribute="baseline" id="Tcn-aA-K7J"/>
+                            <constraint firstItem="6Lv-Nk-yNi" firstAttribute="bottom" secondItem="HkB-eP-JJ0" secondAttribute="bottom" constant="685" id="ZCp-6a-zmf"/>
+                            <constraint firstItem="YKA-oe-lPW" firstAttribute="baseline" secondItem="OhX-Rc-EwF" secondAttribute="firstBaseline" id="aYL-ON-2U2"/>
+                            <constraint firstItem="YKA-oe-lPW" firstAttribute="top" secondItem="OhX-Rc-EwF" secondAttribute="top" id="aok-li-JV2"/>
+                            <constraint firstItem="HkB-eP-JJ0" firstAttribute="top" secondItem="YKA-oe-lPW" secondAttribute="top" id="bNE-Er-6JF"/>
+                            <constraint firstItem="YKA-oe-lPW" firstAttribute="leading" secondItem="HkB-eP-JJ0" secondAttribute="trailing" constant="31" id="rN2-kJ-1ii"/>
+                            <constraint firstItem="HkB-eP-JJ0" firstAttribute="leading" secondItem="rVP-5Y-4zx" secondAttribute="leadingMargin" id="s4X-g7-4PK"/>
+                            <constraint firstItem="OhX-Rc-EwF" firstAttribute="leading" secondItem="YKA-oe-lPW" secondAttribute="trailing" constant="24" id="zVW-Tg-DQD"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Lv-Nk-yNi"/>
+                    </view>
+                    <connections>
+                        <outlet property="arView" destination="rVP-5Y-4zx" id="zha-t1-fgg"/>
+                        <outlet property="backButton" destination="I7f-bs-LhB" id="1B4-0S-ccI"/>
+                        <outlet property="playbackButton" destination="HkB-eP-JJ0" id="JAe-kz-nKH"/>
+                        <outlet property="recordButton" destination="YKA-oe-lPW" id="Rib-II-0DF"/>
+                        <outlet property="saveButton" destination="OhX-Rc-EwF" id="UUd-1Y-b8V"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="mTe-FF-reS" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="134.78260869565219" y="912.72321428571422"/>
         </scene>
     </scenes>
     <resources>
