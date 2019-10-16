@@ -48,8 +48,8 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         if playback {
-            let bodyPositions = routeDict[0]!.positions
-            let limbPositions = routeDict[0]!.matrix
+            let bodyPositions = routeDict[2]!.positions
+            let limbPositions = routeDict[2]!.matrix
             if bodyPositionIterator >= bodyPositions.count-1 {
                 bodyPositionIterator = 0
                 return
@@ -58,28 +58,17 @@ class ViewController: UIViewController, ARSessionDelegate {
             let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
             let bodyRotation = Transform(matrix: bodyAnchor.transform).rotation
             climber.rootNode.position = SCNVector3(bodyPosition.x, bodyPosition.y, bodyPosition.z)
-//            climber.rootNode.orientation = SCNVector4(bodyRotation.vector.x, bodyRotation.vector.y, bodyRotation.vector.z, bodyRotation.vector.w)
+            climber.rootNode.orientation = SCNVector4(bodyRotation.vector.x, bodyRotation.vector.y, bodyRotation.vector.z, bodyRotation.vector.w)
             
             let skeleton = climber.rootNode.childNode(withName: "root", recursively: true)!
             var iterator = 0
             skeleton.enumerateChildNodes { (node, stop) in
-//                if iterator < 5 {
-                    print(limbPositions[bodyPositionIterator][iterator].translation)
-//                    node.position = SCNVector3(limbPositions[bodyPositionIterator][iterator].translation.x,
-//                                               limbPositions[bodyPositionIterator][iterator].translation.y,
-//                                               limbPositions[bodyPositionIterator][iterator].translation.z)
-                    node.position.x += limbPositions[bodyPositionIterator][iterator].translation.x
-                    node.position.y += limbPositions[bodyPositionIterator][iterator].translation.y
-                    node.position.z += limbPositions[bodyPositionIterator][iterator].translation.z
-//                }
+                if iterator < 100 {
+                    print(node.name)
+                    node.transform = SCNMatrix4(limbPositions[bodyPositionIterator][iterator].matrix)
+                }
                 iterator += 1
             }
-            print(iterator)
-            print(limbPositions[bodyPositionIterator].count)
-//            for i in 0..<skeleton.childNodes.count {
-//                print(skeleton.childNodes[i].name)
-//                skeleton.childNodes[i].transform = SCNMatrix4(limbPositions[bodyPositionIterator][i].matrix)
-//            }
             bodyPositionIterator += 1
         }
     }
@@ -184,7 +173,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
 
     func loadRoutes() {
-        for i in 0..<1 {
+        for i in 2..<3 {
             let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
             let limbsUrl = documentsDir.appendingPathComponent("limbs_\(i)")

@@ -119,6 +119,7 @@ class RecorderVC: UIViewController, ARSessionDelegate {
             for anchor in anchors {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
                 if record {
+                    print("recording")
                     bodyPositions.append(bodyAnchor)
                     limbPositions.append(character!.jointTransforms)
                 }
@@ -214,6 +215,8 @@ class RecorderVC: UIViewController, ARSessionDelegate {
         let limbData = try NSKeyedArchiver.archivedData(withRootObject: limbStrings)
         try! limbData.write(to: limbs_url, options: [.atomic])
         saveCount += 1
+        print("Body Positions: \(bodyPositions.count)")
+        print("Limb Positions: \(limbPositions.count)")
         print("done saving!")
     }
     
