@@ -119,7 +119,6 @@ class RecorderVC: UIViewController, ARSessionDelegate {
             for anchor in anchors {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
                 if record {
-                    print("recording")
                     bodyPositions.append(bodyAnchor)
                     limbPositions.append(character!.jointTransforms)
                 }

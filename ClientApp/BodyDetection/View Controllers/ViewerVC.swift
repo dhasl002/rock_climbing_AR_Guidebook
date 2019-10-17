@@ -26,6 +26,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     let coachingOverlay = ARCoachingOverlayView()
     var playback = false
     var bodyPositionIterator = 0
+    var bodyNodePath = ""
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
@@ -63,13 +64,22 @@ class ViewController: UIViewController, ARSessionDelegate {
             let skeleton = climber.rootNode.childNode(withName: "root", recursively: true)!
             var iterator = 0
             skeleton.enumerateChildNodes { (node, stop) in
-                if iterator < 100 {
-                    print(node.name)
+                if iterator < 20 {
+                    bodyNodePath = ""
+                    printNodeRecursively(node)
+                    print(bodyNodePath)
                     node.transform = SCNMatrix4(limbPositions[bodyPositionIterator][iterator].matrix)
                 }
                 iterator += 1
             }
             bodyPositionIterator += 1
+        }
+    }
+    
+    func printNodeRecursively(_ node: SCNNode) {
+        if node.name != nil {
+            bodyNodePath += node.name! + "/"
+            printNodeRecursively(node.parent!)
         }
     }
     
