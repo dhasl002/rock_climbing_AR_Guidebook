@@ -61,7 +61,7 @@ class ViewController: UIViewController, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         if playback {
-            let bodyPositions = routeDict[2]!
+            let bodyPositions = routeDict[0]!
             if bodyPositionIterator >= bodyPositions.count-1 {
                 bodyPositionIterator = 0
                 return
@@ -175,13 +175,14 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
 
     func loadRoutes() {
-        for i in 2..<3 {
-            let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-            let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
+        let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        var it = 0
+        while FileManager.default.fileExists(atPath: String(documentsDir.appendingPathComponent("positions_\(it)").absoluteString.dropFirst(7))) {
+            let positionsUrl = documentsDir.appendingPathComponent("positions_\(it)")
             let positionData = try! Data(contentsOf: positionsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
-            routeDict[i] = bodyPositions as! [ARBodyAnchor]
+            routeDict[it] = bodyPositions as? [ARBodyAnchor]
+            it += 1
         }
-        print(routeDict.count)
     }
 }

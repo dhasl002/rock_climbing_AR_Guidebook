@@ -13,6 +13,7 @@ class EntryViewController: UIViewController {
     @IBOutlet var mainView: UIView!
     @IBOutlet var entryButton: UIButton!
     @IBOutlet var recorderButton: UIButton!
+    @IBOutlet var mappingButton: UIButton!
     @IBOutlet var titleView1: UIView!
     @IBOutlet var titleView2: UIView!
     @IBOutlet var gradientView: UIView!
@@ -65,6 +66,12 @@ class EntryViewController: UIViewController {
     
     @IBAction func recorderButtonPressed() {
         let vc = self.storyboard?.instantiateViewController(withIdentifier: "Recorder") as! RecorderVC
+        vc.modalPresentationStyle = .fullScreen
+        self.present(vc, animated: true, completion: nil)
+    }
+    
+    @IBAction func mappingButtonPressed() {
+        let vc = self.storyboard?.instantiateViewController(withIdentifier: "Mapper") as! MappingVC
         vc.modalPresentationStyle = .fullScreen
         self.present(vc, animated: true, completion: nil)
     }
