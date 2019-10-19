@@ -21,7 +21,6 @@ class RecorderVC: UIViewController, ARSessionDelegate {
     var record: Bool!
     var playback: Bool!
     var bodyPositions = [ARBodyAnchor]()
-    var limbPositions = [[Transform]]()
     var bodyPositionIterator = 0
     var saveCount = 0
     
@@ -89,7 +88,7 @@ class RecorderVC: UIViewController, ARSessionDelegate {
             return
         }
 
-        character?.jointTransforms = limbPositions[bodyPositionIterator]
+//        character?.jointTransforms = bodyPositions[bodyPositionIterator].skeleton.jointLocalTransforms
         let bodyAnchor = bodyPositions[bodyPositionIterator]
         let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
         characterAnchor.position = bodyPosition
@@ -120,7 +119,6 @@ class RecorderVC: UIViewController, ARSessionDelegate {
                 guard let bodyAnchor = anchor as? ARBodyAnchor else { continue }
                 if record {
                     bodyPositions.append(bodyAnchor)
-                    limbPositions.append(character!.jointTransforms)
                 }
                 let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
                 characterAnchor.position = bodyPosition
@@ -186,7 +184,6 @@ class RecorderVC: UIViewController, ARSessionDelegate {
         }
         if record {
             bodyPositions = []
-            limbPositions = []
         }
     }
     
@@ -194,28 +191,14 @@ class RecorderVC: UIViewController, ARSessionDelegate {
         print("saving...")
         let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         var position_url = documentsDir.appendingPathComponent("positions_\(saveCount)")
-        var limbs_url = documentsDir.appendingPathComponent("limbs_\(saveCount)")
         while FileManager.default.fileExists(atPath: String(position_url.absoluteString.dropFirst(7))) {
             saveCount += 1
             position_url = documentsDir.appendingPathComponent("positions_\(saveCount)")
-            limbs_url = documentsDir.appendingPathComponent("limbs_\(saveCount)")
         }
         let bodyData = try NSKeyedArchiver.archivedData(withRootObject: bodyPositions)
         try! bodyData.write(to: position_url, options: [.atomic])
-        
-        var limbStrings = [[String]]()
-        for i in 0..<limbPositions.count {
-            var tmp = [String]()
-            for j in 0..<limbPositions[i].count {
-                tmp.append(convertMatrixToString(limbPositions[i][j].matrix, rowMajor: false))
-            }
-            limbStrings.append(tmp)
-        }
-        let limbData = try NSKeyedArchiver.archivedData(withRootObject: limbStrings)
-        try! limbData.write(to: limbs_url, options: [.atomic])
         saveCount += 1
         print("Body Positions: \(bodyPositions.count)")
-        print("Limb Positions: \(limbPositions.count)")
         print("done saving!")
     }
     

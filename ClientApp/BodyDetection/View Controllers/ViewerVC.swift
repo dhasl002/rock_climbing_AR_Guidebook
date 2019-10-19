@@ -12,17 +12,11 @@ import Combine
 import SCNLine
 import SceneKit.ModelIO
 
-struct poseData {
-    var matrix: [[Transform]]
-    var positions: [ARBodyAnchor]
-}
-
 class ViewController: UIViewController, ARSessionDelegate {
-
     @IBOutlet var arView: ARSCNView!
     var climber = SCNScene()
     var placementRaycast: ARTrackedRaycast?
-    var routeDict = [Int: poseData]()
+    var routeDict = [Int: [ARBodyAnchor]]()
     let coachingOverlay = ARCoachingOverlayView()
     var playback = false
     var bodyPositionIterator = 0
@@ -43,14 +37,31 @@ class ViewController: UIViewController, ARSessionDelegate {
         loadWorldTracking()
         loadRoutes()
         addRoutes()
-
+//        setupLight()
         coachingOverlay.setActive(false, animated: true)
+    }
+    
+    func setupLight() {
+        let spotLight = SCNLight()
+        spotLight.type = .spot
+        spotLight.spotInnerAngle = 45
+        spotLight.spotOuterAngle = 45
+        spotLight.intensity = 40
+        let spotLightNode = SCNNode()
+        spotLightNode.light = spotLight
+        arView.scene.rootNode.addChildNode(spotLightNode)
+        
+        let ambientLight = SCNLight()
+        ambientLight.type = .ambient
+        ambientLight.intensity = 40
+        let ambientLightNode = SCNNode()
+        ambientLightNode.light = spotLight
+        arView.scene.rootNode.addChildNode(ambientLightNode)
     }
     
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         if playback {
-            let bodyPositions = routeDict[2]!.positions
-            let limbPositions = routeDict[2]!.matrix
+            let bodyPositions = routeDict[2]!
             if bodyPositionIterator >= bodyPositions.count-1 {
                 bodyPositionIterator = 0
                 return
@@ -58,39 +69,20 @@ class ViewController: UIViewController, ARSessionDelegate {
             let bodyAnchor = bodyPositions[bodyPositionIterator]
             let bodyPosition = simd_make_float3(bodyAnchor.transform.columns.3)
             let bodyRotation = Transform(matrix: bodyAnchor.transform).rotation
+
             climber.rootNode.position = SCNVector3(bodyPosition.x, bodyPosition.y, bodyPosition.z)
             climber.rootNode.orientation = SCNVector4(bodyRotation.vector.x, bodyRotation.vector.y, bodyRotation.vector.z, bodyRotation.vector.w)
-            
             let skeleton = climber.rootNode.childNode(withName: "root", recursively: true)!
-            var iterator = 0
             skeleton.enumerateChildNodes { (node, stop) in
-                if iterator < 20 {
-                    bodyNodePath = ""
-                    printNodeRecursively(node)
-                    print(bodyNodePath)
-                    node.transform = SCNMatrix4(limbPositions[bodyPositionIterator][iterator].matrix)
-                }
-                iterator += 1
+                let jointName = ARSkeleton.JointName.init(rawValue: node.name!)
+                node.transform = SCNMatrix4(bodyAnchor.skeleton.localTransform(for: jointName)!)
             }
             bodyPositionIterator += 1
         }
     }
     
-    func printNodeRecursively(_ node: SCNNode) {
-        if node.name != nil {
-            bodyNodePath += node.name! + "/"
-            printNodeRecursively(node.parent!)
-        }
-    }
-    
-    func session(_ session: ARSession, cameraDidChangeTrackingState: ARCamera) {
-    }
-    
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-    }
-    
-    func addStartWaypoints(_ pose: poseData) {
-        let initialPosition = simd_make_float3(pose.positions[0].transform.columns.3)
+    func addStartWaypoints(_ poses: [ARBodyAnchor]) {
+        let initialPosition = simd_make_float3(poses[0].transform.columns.3)
         let gradeImage = UIImage(named: "grades/V1.png")!
         let gradeMaterial = SCNMaterial()
         gradeMaterial.diffuse.contents = gradeImage
@@ -105,9 +97,9 @@ class ViewController: UIViewController, ARSessionDelegate {
         arView.scene.rootNode.addChildNode(waypointBackground)
     }
     
-    func addRoutePreview(_ pose: poseData) {
+    func addRoutePreview(_ poses: [ARBodyAnchor]) {
         var climberPositions = [SCNVector3]()
-        for position in pose.positions {
+        for position in poses {
             let positionTransform = position.transform.columns.3
             let vector = SCNVector3(positionTransform.x, positionTransform.y, positionTransform.z)
             climberPositions.append(vector)
@@ -124,10 +116,10 @@ class ViewController: UIViewController, ARSessionDelegate {
     }
 
     func addRoutes() {
-        for pose in routeDict {
-            if pose.value.positions.count > 0 {
-                addStartWaypoints(pose.value)
-                addRoutePreview(pose.value)
+        for poses in routeDict {
+            if poses.value.count > 0 {
+                addStartWaypoints(poses.value)
+                addRoutePreview(poses.value)
             }
         }
     }
@@ -186,14 +178,9 @@ class ViewController: UIViewController, ARSessionDelegate {
         for i in 2..<3 {
             let documentsDir = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
             let positionsUrl = documentsDir.appendingPathComponent("positions_\(i)")
-            let limbsUrl = documentsDir.appendingPathComponent("limbs_\(i)")
             let positionData = try! Data(contentsOf: positionsUrl)
-            let limbData = try! Data(contentsOf: limbsUrl)
             let bodyPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(positionData)
-            let limbPositions = try! NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(limbData)
-            let limbTransforms = convertStringToTransform(stringMatrix: limbPositions as! [[String]])
-            let tuple = poseData(matrix: limbTransforms, positions: bodyPositions as! [ARBodyAnchor])
-            routeDict[i] = tuple
+            routeDict[i] = bodyPositions as! [ARBodyAnchor]
         }
         print(routeDict.count)
     }
