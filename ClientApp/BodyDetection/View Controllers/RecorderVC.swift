@@ -129,10 +129,6 @@ class RecorderVC: UIViewController, ARSessionDelegate {
             }
         }
     }
-    
-    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        print("did add!!!")
-    }
 
     lazy var mapSaveURL: URL = {
         do {

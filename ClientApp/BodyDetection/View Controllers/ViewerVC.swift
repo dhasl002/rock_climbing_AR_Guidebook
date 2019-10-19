@@ -21,6 +21,9 @@ class ViewController: UIViewController, ARSessionDelegate {
     var playback = false
     var bodyPositionIterator = 0
     var bodyNodePath = ""
+    var waypointNodes = [SCNNode]()
+    var routesAdded = false
+    var movedAlready = false
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
@@ -36,7 +39,6 @@ class ViewController: UIViewController, ARSessionDelegate {
         setupCoachingOverlay()
         loadWorldTracking()
         loadRoutes()
-        addRoutes()
 //        setupLight()
         coachingOverlay.setActive(false, animated: true)
     }
@@ -59,7 +61,42 @@ class ViewController: UIViewController, ARSessionDelegate {
         arView.scene.rootNode.addChildNode(ambientLightNode)
     }
     
+    func moveInitialWaypoint(_ node: SCNNode) {
+        if !movedAlready {
+            node.position = SCNVector3(node.position.x + node.worldFront.x * 1.0, node.position.y + node.worldFront.y * 1.0, node.position.z + node.worldFront.z * 1.0)
+            movedAlready = true
+        }
+    }
+    
+    func updateWaypoints(_ frame: ARFrame) {
+        let mat = SCNMatrix4(frame.camera.transform)
+        for node in waypointNodes {
+            node.look(at: SCNVector3(mat.m41, mat.m42, mat.m43))
+            moveInitialWaypoint(node)
+        }
+    }
+    
+    func addRoutes(_ frame: ARFrame) {
+        if !routesAdded {
+//            switch frame.worldMappingStatus {
+//            case .mapped:
+                print("added routes")
+                for poses in routeDict {
+                    if poses.value.count > 0 {
+                        addStartWaypoints(poses.value)
+                        addRoutePreview(poses.value)
+                    }
+                }
+                routesAdded = true
+//            default: break
+//            }
+        }
+    }
+    
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        updateWaypoints(frame)
+        addRoutes(frame)
+        
         if playback {
             let bodyPositions = routeDict[0]!
             if bodyPositionIterator >= bodyPositions.count-1 {
@@ -90,10 +127,12 @@ class ViewController: UIViewController, ARSessionDelegate {
         let waypointBackground = SCNNode()
         waypointBackground.geometry = SCNPlane(width: 0.5, height: 0.5)
         waypointBackground.geometry?.firstMaterial?.diffuse.contents = gradeImage
+        waypointBackground.geometry?.firstMaterial?.diffuse.contentsTransform = SCNMatrix4Translate(SCNMatrix4MakeScale(-1, 1, 1), 1, 0, 0)
         waypointBackground.geometry?.firstMaterial?.isDoubleSided = true
         waypointBackground.renderingOrder = 0
         waypointBackground.name = "v1-test"
         waypointBackground.position = SCNVector3(initialPosition.x, initialPosition.y, initialPosition.z)
+        waypointNodes.append(waypointBackground)
         arView.scene.rootNode.addChildNode(waypointBackground)
     }
     
@@ -113,15 +152,6 @@ class ViewController: UIViewController, ARSessionDelegate {
         lineNode.geometry?.firstMaterial = material
         lineNode.opacity = 0.9
         arView.scene.rootNode.addChildNode(lineNode)
-    }
-
-    func addRoutes() {
-        for poses in routeDict {
-            if poses.value.count > 0 {
-                addStartWaypoints(poses.value)
-                addRoutePreview(poses.value)
-            }
-        }
     }
     
     func playSelectedRoute() {
