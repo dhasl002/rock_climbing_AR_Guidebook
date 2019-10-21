@@ -22,13 +22,21 @@ class ViewController: UIViewController, ARSessionDelegate {
     var bodyPositionIterator = 0
     var bodyNodePath = ""
     var waypointNodes = [SCNNode]()
-    var routesAdded = false
     var movedAlready = false
+    var sessionFrame: ARFrame?
     
     lazy var mapDataFromFile: Data = {
         let arExperience = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true) .appendingPathComponent("map.arexperience")
         return try! Data(contentsOf: arExperience)
     }()
+    
+    let routePreviewColorOptions = [UIColor.purple.cgColor, UIColor.green.cgColor, UIColor.red.cgColor, UIColor.orange.cgColor, UIColor.yellow.cgColor, UIColor.blue.cgColor, UIColor.black.cgColor, UIColor.gray.cgColor]
+    
+    let routeGrades = [0: "grades/V1.png",
+                       1: "grades/V2.png",
+                       2: "grades/V3.png",
+                       3: "grades/V4.png",
+                       4: "grades/V7.png"]
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -39,25 +47,26 @@ class ViewController: UIViewController, ARSessionDelegate {
         setupCoachingOverlay()
         loadWorldTracking()
         loadRoutes()
-//        setupLight()
+        setupLight()
         coachingOverlay.setActive(false, animated: true)
     }
     
     func setupLight() {
-        let spotLight = SCNLight()
-        spotLight.type = .spot
-        spotLight.spotInnerAngle = 45
-        spotLight.spotOuterAngle = 45
-        spotLight.intensity = 40
-        let spotLightNode = SCNNode()
-        spotLightNode.light = spotLight
-        arView.scene.rootNode.addChildNode(spotLightNode)
+        let spotLight = SCNNode()
+        spotLight.light = SCNLight()
+        spotLight.scale = SCNVector3(1,1,1)
+        spotLight.light?.intensity = 1000
+        spotLight.castsShadow = true
+        spotLight.position = SCNVector3Zero
+        spotLight.light?.type = SCNLight.LightType.directional
+        spotLight.light?.color = UIColor.white
+        arView.scene.rootNode.addChildNode(spotLight)
         
         let ambientLight = SCNLight()
         ambientLight.type = .ambient
         ambientLight.intensity = 40
         let ambientLightNode = SCNNode()
-        ambientLightNode.light = spotLight
+        ambientLightNode.light = ambientLight
         arView.scene.rootNode.addChildNode(ambientLightNode)
     }
     
@@ -76,26 +85,8 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
     }
     
-    func addRoutes(_ frame: ARFrame) {
-        if !routesAdded {
-//            switch frame.worldMappingStatus {
-//            case .mapped:
-                print("added routes")
-                for poses in routeDict {
-                    if poses.value.count > 0 {
-                        addStartWaypoints(poses.value)
-                        addRoutePreview(poses.value)
-                    }
-                }
-                routesAdded = true
-//            default: break
-//            }
-        }
-    }
-    
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         updateWaypoints(frame)
-        addRoutes(frame)
         
         if playback {
             let bodyPositions = routeDict[0]!
@@ -118,9 +109,9 @@ class ViewController: UIViewController, ARSessionDelegate {
         }
     }
     
-    func addStartWaypoints(_ poses: [ARBodyAnchor]) {
+    func addStartWaypoints(_ poses: [ARBodyAnchor], _ key: Int) {
         let initialPosition = simd_make_float3(poses[0].transform.columns.3)
-        let gradeImage = UIImage(named: "grades/V1.png")!
+        let gradeImage = UIImage(named: routeGrades[key]!)!
         let gradeMaterial = SCNMaterial()
         gradeMaterial.diffuse.contents = gradeImage
         
@@ -136,21 +127,24 @@ class ViewController: UIViewController, ARSessionDelegate {
         arView.scene.rootNode.addChildNode(waypointBackground)
     }
     
-    func addRoutePreview(_ poses: [ARBodyAnchor]) {
+    func addRoutePreview(_ poses: [ARBodyAnchor], _ key: Int) {
         var climberPositions = [SCNVector3]()
-        for position in poses {
-            let positionTransform = position.transform.columns.3
-            let vector = SCNVector3(positionTransform.x, positionTransform.y, positionTransform.z)
-            climberPositions.append(vector)
+        for i in 0..<poses.count {
+            if i % 10 == 0 {
+                let position = poses[i]
+                let positionTransform = position.transform.columns.3
+                let vector = SCNVector3(positionTransform.x, positionTransform.y, positionTransform.z)
+                climberPositions.append(vector)
+            }
         }
-        let lineGeometry = SCNGeometry.line(points: climberPositions, radius: 0.1).0
+        let lineGeometry = SCNGeometry.line(points: climberPositions, radius: 0.1, edges: 24, maxTurning: 24).0
         let lineNode = SCNNode()
         let material = SCNMaterial()
-        material.diffuse.contents = UIColor.purple.cgColor
+        material.diffuse.contents = routePreviewColorOptions[key]
         lineNode.renderingOrder = 1
         lineNode.geometry = lineGeometry
         lineNode.geometry?.firstMaterial = material
-        lineNode.opacity = 0.9
+        lineNode.opacity = 0.95
         arView.scene.rootNode.addChildNode(lineNode)
     }
     

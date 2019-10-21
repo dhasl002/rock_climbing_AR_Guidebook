@@ -24,4 +24,13 @@ extension ViewController: ARCoachingOverlayViewDelegate {
         self.coachingOverlay.activatesAutomatically = true
     }
     
+    func coachingOverlayViewDidDeactivate(_ coachingOverlayView: ARCoachingOverlayView) {
+        for poses in routeDict {
+            if poses.value.count > 0 {
+                addStartWaypoints(poses.value, poses.key)
+                addRoutePreview(poses.value, poses.key)
+            }
+        }
+    }
+    
 }
