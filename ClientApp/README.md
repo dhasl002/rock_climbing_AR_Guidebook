@@ -1,2 +1,2 @@
 # rock-climbing-body-tracking
-A simple app used to record rock climbing moves in 3d
+Use the camera and AR to discover and visualize climbing routes right in front of you
