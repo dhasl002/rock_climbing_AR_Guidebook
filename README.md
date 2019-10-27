@@ -5,7 +5,7 @@ Use AR 📷 to visualize and understand the climbing routes 🧗in front of you!
  
 #### 1. Scan your environment with ARkit's ARWorldMapping technology
 
-(Gif of scanning)
+![Climber Scan](https://i.imgur.com/8e3TQ9c.mp4)
 
 #### 2. Record a climber to track their body motions
 
